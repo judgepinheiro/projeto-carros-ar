@@ -1,121 +1,166 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello WebXR</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        #info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            background: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 100;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Document</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <!-- include ar.js for A-Frame -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
+  <style>
+    #controls { display: none; position: fixed; z-index: 999; bottom: 20px; left: 0; }
+    #controls.visible { display: block; }
+  </style>
 </head>
-<body>
-    <div id="info">
-        <h3>WebXR Hello World</h3>
-        <p>Clique em "START AR" para começar</p>
+<body style='margin: 0px; overflow: hidden;'>
+  <a-scene embedded arjs>
+
+    <a-assets>
+      <!-- https://sketchfab.com/3d-models/2025-mg-cyberster-glbmgmotorcommx-194c998698594d7e825c9f5dedcdbef3 -->
+      <a-asset-item id="carro1" src="./carro.glb"></a-asset-item>
+      <!-- https://sketchfab.com/3d-models/peugeot-206-glb-1d278036c89d489bb47ccd33b0effa21 -->
+      <a-asset-item id="carro2" src="./carro2.glb"></a-asset-item>
+    </a-assets>
+
+    <a-marker type="pattern" url="./pattern-letterB.patt">
+      <a-entity id="model1" gltf-model="#carro1" rotation="-90 0 0" scale="1 1 1"></a-entity>
+    </a-marker>
+
+    <a-marker type="pattern" url="./pattern-letterA.patt">
+      <a-entity id="model2" gltf-model="#carro2" rotation="-90 0 0" scale="1 1 1"></a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+  <div id="controls">
+    <div id="active-marker-label">—</div>
+    <!-- Escala -->
+    <div>
+      <span>Escala</span>
+      <button onclick="changeScale(-0.1)">−</button>
+      <span id="scaleVal">1.0</span>
+      <button onclick="changeScale(0.1)">+</button>
     </div>
+    <!-- Position X -->
+    <div>
+      <span>Pos X</span>
+      <button onclick="changePos('x', -0.1)">−</button>
+      <span id="posXVal">0.0</span>
+      <button onclick="changePos('x', 0.1)">+</button>
+    </div>
+    <!-- Position Y -->
+    <div>
+      <span>Pos Y</span>
+      <button onclick="changePos('y', -0.1)">−</button>
+      <span id="posYVal">0.0</span>
+      <button onclick="changePos('y', 0.1)">+</button>
+    </div>
+    <!-- Position Z -->
+    <div>
+      <span>Pos Z</span>
+      <button onclick="changePos('z', -0.1)">−</button>
+      <span id="posZVal">0.0</span>
+      <button onclick="changePos('z', 0.1)">+</button>
+    </div>
+    <!-- Rotation X -->
+    <div>
+      <span>Rot X</span>
+      <button onclick="changeRot('x', -15)">−</button>
+      <span id="rotXVal">-90</span>
+      <button onclick="changeRot('x', 15)">+</button>
+    </div>
+    <!-- Rotation Y -->
+    <div>
+      <span>Rot Y</span>
+      <button onclick="changeRot('y', -15)">−</button>
+      <span id="rotYVal">0</span>
+      <button onclick="changeRot('y', 15)">+</button>
+    </div>
+    <!-- Rotation Z -->
+    <div>
+      <span>Rot Z</span>
+      <button onclick="changeRot('z', -15)">−</button>
+      <span id="rotZVal">0</span>
+      <button onclick="changeRot('z', 15)">+</button>
+    </div>
+  </div>
 
-    <script type="module">
-        // Importar THREE.js localmente
-        import * as THREE from './libs/three.module.js';
-        import { ARButton } from './libs/ARButton.js';
+  <script>
+    const controls = document.getElementById('controls');
+    const activeMarkerLabel = document.getElementById('active-marker-label');
 
-        let camera, scene, renderer;
-        let controller;
+    // Cada marcador tem seu próprio modelo e estado independente
+    const markerConfig = [
+      {
+        name: 'Letter B (carro.glb)',
+        el: document.querySelector('[url="./pattern-letterB.patt"]'),
+        model: document.getElementById('model1'),
+        state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
+      },
+      {
+        name: 'Letter A (carro2.glb)',
+        el: document.querySelector('[url="./pattern-letterA.patt"]'),
+        model: document.getElementById('model2'),
+        state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
+      }
+    ];
 
-        init();
-        animate();
+    let activeMarker = null;
 
-        function init() {
-            // Container
-            const container = document.createElement('div');
-            document.body.appendChild(container);
+    markerConfig.forEach(m => {
+      m.el.addEventListener('markerFound', () => {
+        activeMarker = m;
+        console.log(`[AR] markerFound: ${m.name}`);
+        activeMarkerLabel.textContent = `Marcador ativo: ${m.name}`;
+        syncDisplays(m.state);
+        controls.classList.add('visible');
+      });
 
-            // Cena
-            scene = new THREE.Scene();
-
-            // Câmera
-            camera = new THREE.PerspectiveCamera(
-                70,
-                window.innerWidth / window.innerHeight,
-                0.01,
-                20
-            );
-
-            // Luz
-            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-            light.position.set(0.5, 1, 0.25);
-            scene.add(light);
-
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setPixelRatio(window.dpr);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.xr.enabled = true;
-            container.appendChild(renderer.domElement);
-
-            // Botão AR
-            document.body.appendChild(
-                ARButton.createButton(renderer, {
-                    requiredFeatures: ['hit-test']
-                })
-            );
-
-            // Criar um cubo de exemplo
-            const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-            const material = new THREE.MeshPhongMaterial({
-                color: 0x00ff00,
-                shininess: 100
-            });
-            const cube = new THREE.Mesh(geometry, material);
-            cube.position.set(0, 0, -0.5);
-            scene.add(cube);
-
-            // Controller para interação
-            controller = renderer.xr.getController(0);
-            controller.addEventListener('select', onSelect);
-            scene.add(controller);
-
-            // Redimensionar
-            window.addEventListener('resize', onWindowResize);
+      m.el.addEventListener('markerLost', () => {
+        console.log(`[AR] markerLost: ${m.name}`);
+        if (activeMarker === m) {
+          activeMarker = null;
+          controls.classList.remove('visible');
         }
+      });
+    });
 
-        function onSelect() {
-            // Adicionar um cubo na posição do controller
-            const geometry = new THREE.BoxGeometry(0.05, 0.05, 0.05);
-            const material = new THREE.MeshPhongMaterial({
-                color: Math.random() * 0xffffff
-            });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.copy(controller.position);
-            scene.add(mesh);
-        }
+    // Atualiza todos os displays com o estado do marcador ativo
+    function syncDisplays(state) {
+      document.getElementById('scaleVal').textContent = state.scale.toFixed(1);
+      document.getElementById('posXVal').textContent  = state.pos.x.toFixed(1);
+      document.getElementById('posYVal').textContent  = state.pos.y.toFixed(1);
+      document.getElementById('posZVal').textContent  = state.pos.z.toFixed(1);
+      document.getElementById('rotXVal').textContent  = state.rot.x;
+      document.getElementById('rotYVal').textContent  = state.rot.y;
+      document.getElementById('rotZVal').textContent  = state.rot.z;
+    }
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+    function changeScale(delta) {
+      if (!activeMarker) return;
+      const s = activeMarker.state;
+      s.scale = Math.max(0.1, parseFloat((s.scale + delta).toFixed(1)));
+      activeMarker.model.setAttribute('scale', `${s.scale} ${s.scale} ${s.scale}`);
+      document.getElementById('scaleVal').textContent = s.scale.toFixed(1);
+    }
 
-        function animate() {
-            renderer.setAnimationLoop(render);
-        }
+    function changePos(axis, delta) {
+      if (!activeMarker) return;
+      const p = activeMarker.state.pos;
+      p[axis] = parseFloat((p[axis] + delta).toFixed(1));
+      activeMarker.model.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
+      document.getElementById(`pos${axis.toUpperCase()}Val`).textContent = p[axis].toFixed(1);
+    }
 
-        function render() {
-            renderer.render(scene, camera);
-        }
-    </script>
+    function changeRot(axis, delta) {
+      if (!activeMarker) return;
+      const r = activeMarker.state.rot;
+      r[axis] = (r[axis] + delta) % 360;
+      activeMarker.model.setAttribute('rotation', `${r.x} ${r.y} ${r.z}`);
+      document.getElementById(`rot${axis.toUpperCase()}Val`).textContent = r[axis];
+    }
+  </script>
 </body>
 </html>
