@@ -188,6 +188,7 @@ markerConfig.forEach(m=>{
     activeMarker=m;
     activeMarkerLabel.textContent=`Carro ativo: ${m.name}`;
     controls.classList.add('visible');
+    atualizarBotoesCores(); // 👈 AQUI
   });
   m.el.addEventListener('markerLost',()=>{
     if(activeMarker===m){
@@ -216,6 +217,14 @@ function trocarCor(cor){
 
   // atualiza referência
   activeMarker.model = novo;
+}
+  function atualizarBotoesCores() {
+  const todas = ['preto','prata','vermelho','branco'];
+
+  todas.forEach(cor => {
+    const btn = document.getElementById(`btn_${cor}`);
+    btn.style.display = activeMarker.cores.includes(cor) ? 'inline-block' : 'none';
+  });
 }
 function changeScale(d){
   if(!activeMarker)return;
