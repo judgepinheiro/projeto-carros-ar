@@ -201,20 +201,8 @@ function trocarCor(cor){
   if(!activeMarker.cores.includes(cor)) return;
 
   const modelo = `#${activeMarker.base}_${cor}`;
-  const parent = activeMarker.model.parentElement;
 
-  // remove o modelo atual
-  parent.removeChild(activeMarker.model);
-
-  // cria novo modelo
-  const novo = document.createElement('a-entity');
-  novo.setAttribute('gltf-model', modelo);
-  novo.setAttribute('rotation', '-90 0 0');
-
-  parent.appendChild(novo);
-
-  // atualiza referência
-  activeMarker.model = novo;
+  activeMarker.model.setAttribute('gltf-model', modelo);
 }
   function atualizarBotoesCores() {
   const todas = ['preto','prata','vermelho','branco'];
