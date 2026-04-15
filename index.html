@@ -36,9 +36,7 @@
       border: 2px solid transparent;
     }
 
-    .cor-btn:hover {
-      transform: scale(1.2);
-    }
+    .cor-btn:hover { transform: scale(1.2); }
 
     #loading {
       display:none;
@@ -76,6 +74,10 @@
 <body>
 
 <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+
+  <!-- iluminação -->
+  <a-light type="ambient" intensity="1.2"></a-light>
+  <a-light type="directional" position="2 2 1" intensity="1.5"></a-light>
 
   <a-assets>
     <a-asset-item id="bmw3_preto" src="./bmw3_preto.glb"></a-asset-item>
@@ -128,47 +130,41 @@
 
   <hr>
 
-  <div>
-    Escala:
-    <button onclick="changeScale(-0.1)">−</button>
-    <button onclick="changeScale(0.1)">+</button>
-  </div>
+  Escala:
+  <button onclick="changeScale(-0.1)">−</button>
+  <span id="scaleVal">1.0</span>
+  <button onclick="changeScale(0.1)">+</button>
 
-  <div>
-    X:
-    <button onclick="changePos('x', -0.1)">−</button>
-    <button onclick="changePos('x', 0.1)">+</button>
-  </div>
+  <br>X:
+  <button onclick="changePos('x', -0.1)">−</button>
+  <span id="posXVal">0</span>
+  <button onclick="changePos('x', 0.1)">+</button>
 
-  <div>
-    Y:
-    <button onclick="changePos('y', -0.1)">−</button>
-    <button onclick="changePos('y', 0.1)">+</button>
-  </div>
+  <br>Y:
+  <button onclick="changePos('y', -0.1)">−</button>
+  <span id="posYVal">0</span>
+  <button onclick="changePos('y', 0.1)">+</button>
 
-  <div>
-    Z:
-    <button onclick="changePos('z', -0.1)">−</button>
-    <button onclick="changePos('z', 0.1)">+</button>
-  </div>
+  <br>Z:
+  <button onclick="changePos('z', -0.1)">−</button>
+  <span id="posZVal">0</span>
+  <button onclick="changePos('z', 0.1)">+</button>
 
-  <div>
-    Rot X:
-    <button onclick="changeRot('x', -15)">−</button>
-    <button onclick="changeRot('x', 15)">+</button>
-  </div>
+  <br>Rot X:
+  <button onclick="changeRot('x', -15)">−</button>
+  <span id="rotXVal">-90</span>
+  <button onclick="changeRot('x', 15)">+</button>
 
-  <div>
-    Rot Y:
-    <button onclick="changeRot('y', -15)">−</button>
-    <button onclick="changeRot('y', 15)">+</button>
-  </div>
+  <br>Rot Y:
+  <button onclick="changeRot('y', -15)">−</button>
+  <span id="rotYVal">0</span>
+  <button onclick="changeRot('y', 15)">+</button>
 
-  <div>
-    Rot Z:
-    <button onclick="changeRot('z', -15)">−</button>
-    <button onclick="changeRot('z', 15)">+</button>
-  </div>
+  <br>Rot Z:
+  <button onclick="changeRot('z', -15)">−</button>
+  <span id="rotZVal">0</span>
+  <button onclick="changeRot('z', 15)">+</button>
+
 </div>
 
 <div id="loading">
@@ -184,98 +180,71 @@ const controls = document.getElementById('controls');
 const activeMarkerLabel = document.getElementById('active-marker-label');
 
 const markerConfig = [
-  {
-    name: 'BMW Série 3',
-    el: document.querySelector('[url="./pattern-letterA.patt"]'),
-    model: document.getElementById('model1'),
-    base: 'bmw3',
-    cores: ['preto', 'prata', 'vermelho'],
-    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
-  },
-  {
-    name: 'BMW X5',
-    el: document.querySelector('[url="./pattern-letterB.patt"]'),
-    model: document.getElementById('model2'),
-    base: 'x5',
-    cores: ['preto', 'prata', 'branco'],
-    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
-  },
-  {
-    name: 'Fiat Palio',
-    el: document.querySelector('[url="./pattern-letterC.patt"]'),
-    model: document.getElementById('model3'),
-    base: 'palio',
-    cores: ['preto', 'prata', 'vermelho'],
-    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
-  },
-  {
-    name: 'Fiat Uno',
-    el: document.querySelector('[url="./pattern-letterD.patt"]'),
-    model: document.getElementById('model4'),
-    base: 'uno',
-    cores: ['preto', 'prata', 'branco'],
-    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
-  }
+  { name:'BMW Série 3', el:document.querySelector('[url="./pattern-letterA.patt"]'), model:document.getElementById('model1'), base:'bmw3', cores:['preto','prata','vermelho'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} },
+  { name:'BMW X5', el:document.querySelector('[url="./pattern-letterB.patt"]'), model:document.getElementById('model2'), base:'x5', cores:['preto','prata','branco'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} },
+  { name:'Fiat Palio', el:document.querySelector('[url="./pattern-letterC.patt"]'), model:document.getElementById('model3'), base:'palio', cores:['preto','prata','vermelho'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} },
+  { name:'Fiat Uno', el:document.querySelector('[url="./pattern-letterD.patt"]'), model:document.getElementById('model4'), base:'uno', cores:['preto','prata','branco'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} }
 ];
 
 let activeMarker = null;
 
-markerConfig.forEach(m => {
-  m.el.addEventListener('markerFound', () => {
-    activeMarker = m;
-    activeMarkerLabel.textContent = `Carro ativo: ${m.name}`;
+markerConfig.forEach(m=>{
+  m.el.addEventListener('markerFound',()=>{
+    activeMarker=m;
+    activeMarkerLabel.textContent=`Carro ativo: ${m.name}`;
     controls.classList.add('visible');
   });
-
-  m.el.addEventListener('markerLost', () => {
-    if (activeMarker === m) {
-      activeMarker = null;
+  m.el.addEventListener('markerLost',()=>{
+    if(activeMarker===m){
+      activeMarker=null;
       controls.classList.remove('visible');
     }
   });
 });
 
-function trocarCor(cor) {
-  if (!activeMarker) return;
-  if (!activeMarker.cores.includes(cor)) return;
+function trocarCor(cor){
+  if(!activeMarker || !activeMarker.cores.includes(cor)) return;
 
-  const modelo = `#${activeMarker.base}_${cor}`;
-  const loading = document.getElementById("loading");
-  const bar = document.getElementById("loading-bar");
+  const modelo=`#${activeMarker.base}_${cor}`;
+  const loading=document.getElementById("loading");
+  const bar=document.getElementById("loading-bar");
 
-  loading.style.display = "flex";
-  bar.style.width = "10%";
+  loading.style.display="flex";
+  bar.style.width="10%";
 
-  const entity = activeMarker.model;
+  const entity=activeMarker.model;
 
-  entity.addEventListener('model-loaded', function handler() {
-    bar.style.width = "100%";
-    setTimeout(() => loading.style.display = "none", 300);
-    entity.removeEventListener('model-loaded', handler);
+  entity.addEventListener('model-loaded',function handler(){
+    bar.style.width="100%";
+    setTimeout(()=>loading.style.display="none",300);
+    entity.removeEventListener('model-loaded',handler);
   });
 
-  entity.setAttribute('gltf-model', modelo);
+  entity.setAttribute('gltf-model',modelo);
 }
 
-function changeScale(delta) {
-  if (!activeMarker) return;
-  const s = activeMarker.state;
-  s.scale = Math.max(0.1, s.scale + delta);
-  activeMarker.model.setAttribute('scale', `${s.scale} ${s.scale} ${s.scale}`);
+function changeScale(d){
+  if(!activeMarker)return;
+  const s=activeMarker.state;
+  s.scale=Math.max(0.1,s.scale+d);
+  activeMarker.model.setAttribute('scale',`${s.scale} ${s.scale} ${s.scale}`);
+  document.getElementById('scaleVal').textContent=s.scale.toFixed(1);
 }
 
-function changePos(axis, delta) {
-  if (!activeMarker) return;
-  const p = activeMarker.state.pos;
-  p[axis] += delta;
-  activeMarker.model.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
+function changePos(a,d){
+  if(!activeMarker)return;
+  const p=activeMarker.state.pos;
+  p[a]+=d;
+  activeMarker.model.setAttribute('position',`${p.x} ${p.y} ${p.z}`);
+  document.getElementById(`pos${a.toUpperCase()}Val`).textContent=p[a].toFixed(1);
 }
 
-function changeRot(axis, delta) {
-  if (!activeMarker) return;
-  const r = activeMarker.state.rot;
-  r[axis] += delta;
-  activeMarker.model.setAttribute('rotation', `${r.x} ${r.y} ${r.z}`);
+function changeRot(a,d){
+  if(!activeMarker)return;
+  const r=activeMarker.state.rot;
+  r[a]+=d;
+  activeMarker.model.setAttribute('rotation',`${r.x} ${r.y} ${r.z}`);
+  document.getElementById(`rot${a.toUpperCase()}Val`).textContent=r[a];
 }
 
 </script>
