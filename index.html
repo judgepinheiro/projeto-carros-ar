@@ -101,10 +101,43 @@ const controls = document.getElementById('controls');
 const activeMarkerLabel = document.getElementById('active-marker-label');
 
 const markerConfig = [
-  { name:'BMW Série 3', el:document.querySelector('[url="./pattern-letterA.patt"]'), model:document.getElementById('model1'), base:'bmw3', cores:['preto','prata','vermelho'] },
-  { name:'BMW X5', el:document.querySelector('[url="./pattern-letterB.patt"]'), model:document.getElementById('model2'), base:'x5', cores:['preto','prata','branco'] },
-  { name:'Fiat Palio', el:document.querySelector('[url="./pattern-letterC.patt"]'), model:document.getElementById('model3'), base:'palio', cores:['preto','prata','vermelho'] },
-  { name:'Fiat Uno', el:document.querySelector('[url="./pattern-letterD.patt"]'), model:document.getElementById('model4'), base:'uno', cores:['preto','prata','branco'] }
+
+  {
+    name:'BMW Série 3',
+    el:document.querySelector('[url="./pattern-letterA.patt"]'),
+    model:document.getElementById('model1'),
+    base:'bmw3',
+    cores:['preto','prata','vermelho'],
+    state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
+  },
+
+  {
+    name:'BMW X5',
+    el:document.querySelector('[url="./pattern-letterB.patt"]'),
+    model:document.getElementById('model2'),
+    base:'x5',
+    cores:['preto','prata','branco'],
+    state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
+  },
+
+  {
+    name:'Fiat Palio',
+    el:document.querySelector('[url="./pattern-letterC.patt"]'),
+    model:document.getElementById('model3'),
+    base:'palio',
+    cores:['preto','prata','vermelho'],
+    state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
+  },
+
+  {
+    name:'Fiat Uno',
+    el:document.querySelector('[url="./pattern-letterD.patt"]'),
+    model:document.getElementById('model4'),
+    base:'uno',
+    cores:['preto','prata','branco'],
+    state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
+  }
+
 ];
 
 let activeMarker = null;
@@ -130,16 +163,27 @@ function trocarCor(cor){
   if(!activeMarker.cores.includes(cor)) return;
 
   const modelo = `#${activeMarker.base}_${cor}`;
+  const parent = activeMarker.model.parentElement;
+  const state = activeMarker.state;
 
-  const entity = activeMarker.model;
+  // remove modelo atual
+  parent.removeChild(activeMarker.model);
 
-  // remove primeiro
-  entity.removeAttribute('gltf-model');
+  // cria novo modelo
+  const novo = document.createElement('a-entity');
 
-  // pequeno delay
-  setTimeout(() => {
-    entity.setAttribute('gltf-model', modelo);
-  }, 50);
+  novo.setAttribute('gltf-model', modelo);
+
+  // reaplica tudo (ESSENCIAL)
+  novo.setAttribute('scale', `${state.scale} ${state.scale} ${state.scale}`);
+  novo.setAttribute('position', `${state.pos.x} ${state.pos.y} ${state.pos.z}`);
+  novo.setAttribute('rotation', `${state.rot.x} ${state.rot.y} ${state.rot.z}`);
+
+  // adiciona na cena
+  parent.appendChild(novo);
+
+  // atualiza referência
+  activeMarker.model = novo;
 }
 
 function atualizarBotoesCores(){
