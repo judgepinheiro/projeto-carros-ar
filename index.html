@@ -42,8 +42,8 @@
 
 <a-scene embedded arjs>
 
-  <a-light type="ambient" intensity="1.2"></a-light>
-  <a-light type="directional" position="2 2 1" intensity="1.5"></a-light>
+  <a-light type="ambient" intensity="2"></a-light>
+  <a-light type="directional" position="2 2 1" intensity="2"></a-light>
 
   <a-assets>
     <a-asset-item id="bmw3_preto" src="./bmw3_preto.glb"></a-asset-item>
@@ -139,7 +139,6 @@ const controls = document.getElementById('controls');
 const activeMarkerLabel = document.getElementById('active-marker-label');
 
 const markerConfig = [
-
   {
     name:'BMW Série 3',
     el:document.querySelector('[url="./pattern-letterA.patt"]'),
@@ -148,7 +147,6 @@ const markerConfig = [
     cores:['preto','prata','vermelho'],
     state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
   },
-
   {
     name:'BMW X5',
     el:document.querySelector('[url="./pattern-letterB.patt"]'),
@@ -157,7 +155,6 @@ const markerConfig = [
     cores:['preto','prata','branco'],
     state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
   },
-
   {
     name:'Fiat Palio',
     el:document.querySelector('[url="./pattern-letterC.patt"]'),
@@ -166,7 +163,6 @@ const markerConfig = [
     cores:['preto','prata','vermelho'],
     state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
   },
-
   {
     name:'Fiat Uno',
     el:document.querySelector('[url="./pattern-letterD.patt"]'),
@@ -175,7 +171,6 @@ const markerConfig = [
     cores:['preto','prata','branco'],
     state:{ scale:1, pos:{x:0,y:0,z:0}, rot:{x:-90,y:0,z:0} }
   }
-
 ];
 
 let activeMarker = null;
@@ -204,23 +199,17 @@ function trocarCor(cor){
   const parent = activeMarker.model.parentElement;
   const state = activeMarker.state;
 
-  // remove modelo atual
   parent.removeChild(activeMarker.model);
 
-  // cria novo modelo
   const novo = document.createElement('a-entity');
 
   novo.setAttribute('gltf-model', modelo);
-
-  // reaplica tudo (ESSENCIAL)
   novo.setAttribute('scale', `${state.scale} ${state.scale} ${state.scale}`);
   novo.setAttribute('position', `${state.pos.x} ${state.pos.y} ${state.pos.z}`);
   novo.setAttribute('rotation', `${state.rot.x} ${state.rot.y} ${state.rot.z}`);
 
-  // adiciona na cena
   parent.appendChild(novo);
 
-  // atualiza referência
   activeMarker.model = novo;
 }
 
@@ -231,6 +220,38 @@ function atualizarBotoesCores(){
     const btn=document.getElementById(`btn_${c}`);
     btn.style.display = activeMarker.cores.includes(c) ? 'inline-block' : 'none';
   });
+}
+
+/* ===== FUNÇÕES QUE FALTAVAM ===== */
+
+function changeScale(d){
+  if(!activeMarker) return;
+
+  const s = activeMarker.state;
+  s.scale = Math.max(0.1, s.scale + d);
+
+  activeMarker.model.setAttribute('scale', `${s.scale} ${s.scale} ${s.scale}`);
+  document.getElementById('scaleVal').textContent = s.scale.toFixed(1);
+}
+
+function changePos(a,d){
+  if(!activeMarker) return;
+
+  const p = activeMarker.state.pos;
+  p[a] += d;
+
+  activeMarker.model.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
+  document.getElementById(`pos${a.toUpperCase()}Val`).textContent = p[a].toFixed(1);
+}
+
+function changeRot(a,d){
+  if(!activeMarker) return;
+
+  const r = activeMarker.state.rot;
+  r[a] += d;
+
+  activeMarker.model.setAttribute('rotation', `${r.x} ${r.y} ${r.z}`);
+  document.getElementById(`rot${a.toUpperCase()}Val`).textContent = r[a];
 }
 
 </script>
