@@ -1,56 +1,129 @@
-# WebXR Hello World - Offline
+#  Projeto AR - Visualização de Carros em Realidade Aumentada
 
-## Requisitos
+##  Descrição
 
-- **Node.js** v14 ou superior — [nodejs.org](https://nodejs.org)
-- **GIT BASH -> OpenSSL** (para gerar certificados) — incluso no Git for Windows: [git-scm.com](https://git-scm.com)
-- **Celular Android** com Chrome e suporte a ARCore — [lista de dispositivos](https://developers.google.com/ar/devices)
-- PC e celular na **mesma rede Wi-Fi**
+Este projeto tem como objetivo demonstrar a visualização de modelos 3D de carros utilizando **Realidade Aumentada (AR)** diretamente no navegador.
 
-## Como rodar
-
-### 1. Gerar certificados SSL
-
-**Git Bash (Windows):**
-```bash
-openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "//CN=localhost"
-```
-
-### 2. Liberar firewall (Windows)
-
-**PowerShell como Administrador:**
-```powershell
-New-NetFirewallRule -DisplayName "WebXR Server" -Direction Inbound -LocalPort 8443 -Protocol TCP -Action Allow
-```
-
-### 3. Descobrir seu IP
-
-```bash
-ipconfig
-```
-Anote o IPv4 (ex: `192.168.1.100`)
-
-### 4. Iniciar servidor
-
-```bash
-node server.js
-```
-
-### 5. Acessar do celular
-
-No Chrome do celular:
-```
-https://SEU_IP:8443
-```
-
-Aceite o aviso de segurança → "Avançado" → "Continuar"
-
-Clique em **START AR** e toque na tela para adicionar cubos.
+O usuário pode acessar o sistema através de um QR Code ou link e, ao apontar a câmera para marcadores impressos, visualizar diferentes veículos em 3D, podendo ainda alterar suas cores em tempo real.
 
 ---
 
-## Problemas comuns
+##  Funcionalidades
 
-**Timeout:** Execute o comando do firewall (passo 2)  
-**WebXR not available:** Use HTTPS e Chrome, celular precisa estar na lista de dispositivos compatíveis no ARCore  
-**Site não seguro:** É esperado, clique em "Avançado" e continue
+* 📱 Acesso via QR Code
+*  Detecção de marcadores (A, B, C, D)
+*  Visualização de 4 carros diferentes:
+
+  * BMW Série 3
+  * BMW X5
+  * Fiat Palio
+  * Fiat Uno
+*  Troca de cores interativa
+*  Controles de:
+
+  * Escala
+  * Posição
+  * Rotação
+
+---
+
+##  Tecnologias Utilizadas
+
+* HTML5
+* JavaScript
+* A-Frame
+* AR.js
+
+---
+
+##  Estrutura do Projeto
+
+```
+projeto-carros-ar
+├── index.html
+├── bmw3_preto.glb
+├── bmw3_prata.glb
+├── bmw3_vermelho.glb
+├── x5_preto.glb
+├── x5_prata.glb
+├── x5_branco.glb
+├── palio_preto.glb
+├── palio_prata.glb
+├── palio_vermelho.glb
+├── uno_preto.glb
+├── uno_prata.glb
+├── uno_branco.glb
+├── pattern-letterA.patt
+├── pattern-letterB.patt
+├── pattern-letterC.patt
+├── pattern-letterD.patt
+```
+
+---
+
+##  Como Executar
+
+###  Localmente
+
+1. Abra o terminal na pasta do projeto
+2. Execute:
+
+```
+node server.js
+```
+
+3. Acesse:
+
+```
+http://localhost:3000
+```
+
+---
+
+### 🔹 Online (GitHub Pages)
+
+Acesse o projeto diretamente pelo link:
+
+```
+https://judgepinheiro.github.io/projeto-carros-ar/
+```
+
+---
+
+##  Como Utilizar
+
+1. Escaneie o QR Code do projeto
+2. Permita o acesso à câmera
+3. Aponte para um dos marcadores impressos
+4. Interaja com o modelo 3D
+
+---
+
+##  Marcadores
+
+Utilize os seguintes marcadores impressos:
+
+* 🅰 BMW Série 3
+* 🅱 BMW X5
+* 🅲 Fiat Palio
+* 🅳 Fiat Uno
+
+---
+
+##  Observações
+
+* É necessário utilizar um dispositivo com câmera (preferencialmente celular)
+* O projeto funciona melhor em navegadores modernos (Chrome recomendado)
+* É necessário conexão HTTPS para funcionamento da câmera
+
+---
+
+##  Autor
+
+Mateus Pinheiro
+
+---
+
+##  Licença
+
+Este projeto foi desenvolvido para fins acadêmicos.
