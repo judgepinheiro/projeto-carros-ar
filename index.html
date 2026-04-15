@@ -205,22 +205,33 @@ markerConfig.forEach(m=>{
 function trocarCor(cor){
   if(!activeMarker || !activeMarker.cores.includes(cor)) return;
 
-  const modelo=`#${activeMarker.base}_${cor}`;
-  const loading=document.getElementById("loading");
-  const bar=document.getElementById("loading-bar");
+  const modelo = `#${activeMarker.base}_${cor}`;
+  const loading = document.getElementById("loading");
+  const bar = document.getElementById("loading-bar");
 
-  loading.style.display="flex";
-  bar.style.width="10%";
+  loading.style.display = "flex";
+  bar.style.width = "20%";
 
-  const entity=activeMarker.model;
+  const entity = activeMarker.model;
 
-  entity.addEventListener('model-loaded',function handler(){
-    bar.style.width="100%";
-    setTimeout(()=>loading.style.display="none",300);
-    entity.removeEventListener('model-loaded',handler);
-  });
+  // remove modelo atual
+  entity.removeAttribute('gltf-model');
 
-  entity.setAttribute('gltf-model',modelo);
+  setTimeout(() => {
+
+    entity.setAttribute('gltf-model', modelo);
+
+    entity.addEventListener('model-loaded', function handler(){
+      bar.style.width = "100%";
+
+      setTimeout(() => {
+        loading.style.display = "none";
+      }, 300);
+
+      entity.removeEventListener('model-loaded', handler);
+    });
+
+  }, 100);
 }
 
 function changeScale(d){
