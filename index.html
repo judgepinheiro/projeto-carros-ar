@@ -193,25 +193,42 @@ function atualizarBotoesCores(){
 
 function changeScale(d){
   if(!activeMarker) return;
+
   const s = activeMarker.state;
+
   s.scale = Math.max(0.1, s.scale + d);
-  activeMarker.model.setAttribute('scale', `${s.scale} ${s.scale} ${s.scale}`);
+
+  // aplica FORÇADO
+  activeMarker.model.object3D.scale.set(s.scale, s.scale, s.scale);
+
   document.getElementById('scaleVal').textContent = s.scale.toFixed(1);
 }
 
 function changePos(a,d){
   if(!activeMarker) return;
+
   const p = activeMarker.state.pos;
+
   p[a] += d;
-  activeMarker.model.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
+
+  activeMarker.model.object3D.position.set(p.x, p.y, p.z);
+
   document.getElementById(`pos${a.toUpperCase()}Val`).textContent = p[a].toFixed(1);
 }
 
 function changeRot(a,d){
   if(!activeMarker) return;
+
   const r = activeMarker.state.rot;
+
   r[a] += d;
-  activeMarker.model.setAttribute('rotation', `${r.x} ${r.y} ${r.z}`);
+
+  activeMarker.model.object3D.rotation.set(
+    THREE.Math.degToRad(r.x),
+    THREE.Math.degToRad(r.y),
+    THREE.Math.degToRad(r.z)
+  );
+
   document.getElementById(`rot${a.toUpperCase()}Val`).textContent = r[a];
 }
 
