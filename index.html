@@ -93,6 +93,44 @@
     <span id="btn_vermelho" class="cor-btn" style="background:red;" onclick="trocarCor('vermelho')"></span>
     <span id="btn_branco" class="cor-btn" style="background:white; border:1px solid #000;" onclick="trocarCor('branco')"></span>
   </div>
+  
+<hr>
+
+Escala:
+<button onclick="changeScale(-0.1)">−</button>
+<span id="scaleVal">1.0</span>
+<button onclick="changeScale(0.1)">+</button>
+
+<br>X:
+<button onclick="changePos('x', -0.1)">−</button>
+<span id="posXVal">0</span>
+<button onclick="changePos('x', 0.1)">+</button>
+
+<br>Y:
+<button onclick="changePos('y', -0.1)">−</button>
+<span id="posYVal">0</span>
+<button onclick="changePos('y', 0.1)">+</button>
+
+<br>Z:
+<button onclick="changePos('z', -0.1)">−</button>
+<span id="posZVal">0</span>
+<button onclick="changePos('z', 0.1)">+</button>
+
+<br>Rot X:
+<button onclick="changeRot('x', -15)">−</button>
+<span id="rotXVal">-90</span>
+<button onclick="changeRot('x', 15)">+</button>
+
+<br>Rot Y:
+<button onclick="changeRot('y', -15)">−</button>
+<span id="rotYVal">0</span>
+<button onclick="changeRot('y', 15)">+</button>
+
+<br>Rot Z:
+<button onclick="changeRot('z', -15)">−</button>
+<span id="rotZVal">0</span>
+<button onclick="changeRot('z', 15)">+</button>
+
 </div>
 
 <script>
