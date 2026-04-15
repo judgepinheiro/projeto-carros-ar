@@ -167,12 +167,7 @@
 
 </div>
 
-<div id="loading">
-  <div>Carregando modelo...</div>
-  <div id="loading-bar-container">
-    <div id="loading-bar"></div>
-  </div>
-</div>
+
 
 <script>
 
@@ -203,37 +198,25 @@ markerConfig.forEach(m=>{
 });
 
 function trocarCor(cor){
-  if(!activeMarker || !activeMarker.cores.includes(cor)) return;
+  if(!activeMarker) return;
+  if(!activeMarker.cores.includes(cor)) return;
 
   const modelo = `#${activeMarker.base}_${cor}`;
-  const loading = document.getElementById("loading");
-  const bar = document.getElementById("loading-bar");
+  const parent = activeMarker.model.parentElement;
 
-  loading.style.display = "flex";
-  bar.style.width = "20%";
+  // remove o modelo atual
+  parent.removeChild(activeMarker.model);
 
-  const entity = activeMarker.model;
+  // cria novo modelo
+  const novo = document.createElement('a-entity');
+  novo.setAttribute('gltf-model', modelo);
+  novo.setAttribute('rotation', '-90 0 0');
 
-  // remove modelo atual
-  entity.removeAttribute('gltf-model');
+  parent.appendChild(novo);
 
-  setTimeout(() => {
-
-    entity.setAttribute('gltf-model', modelo);
-
-    entity.addEventListener('model-loaded', function handler(){
-      bar.style.width = "100%";
-
-      setTimeout(() => {
-        loading.style.display = "none";
-      }, 300);
-
-      entity.removeEventListener('model-loaded', handler);
-    });
-
-  }, 100);
+  // atualiza referência
+  activeMarker.model = novo;
 }
-
 function changeScale(d){
   if(!activeMarker)return;
   const s=activeMarker.state;
