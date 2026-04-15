@@ -130,7 +130,16 @@ function trocarCor(cor){
   if(!activeMarker.cores.includes(cor)) return;
 
   const modelo = `#${activeMarker.base}_${cor}`;
-  activeMarker.model.setAttribute('gltf-model', modelo);
+
+  const entity = activeMarker.model;
+
+  // remove primeiro
+  entity.removeAttribute('gltf-model');
+
+  // pequeno delay
+  setTimeout(() => {
+    entity.setAttribute('gltf-model', modelo);
+  }, 50);
 }
 
 function atualizarBotoesCores(){
