@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, user-scalable=no">
   <title>AR Carros</title>
 
- <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
+
   <style>
     body { margin:0; overflow:hidden; }
 
@@ -34,46 +35,13 @@
       cursor: pointer;
       border: 2px solid transparent;
     }
-
-    .cor-btn:hover { transform: scale(1.2); }
-
-    #loading {
-      display:none;
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      background:rgba(0,0,0,0.8);
-      color:white;
-      z-index:9999;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      font-family:Arial;
-    }
-
-    #loading-bar-container {
-      width:200px;
-      height:10px;
-      background:#444;
-      margin-top:10px;
-      border-radius:5px;
-      overflow:hidden;
-    }
-
-    #loading-bar {
-      width:0%;
-      height:100%;
-      background:lime;
-    }
   </style>
 </head>
 
 <body>
 
-<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-  <!-- iluminação -->
+<a-scene embedded arjs>
+
   <a-light type="ambient" intensity="1.2"></a-light>
   <a-light type="directional" position="2 2 1" intensity="1.5"></a-light>
 
@@ -125,47 +93,7 @@
     <span id="btn_vermelho" class="cor-btn" style="background:red;" onclick="trocarCor('vermelho')"></span>
     <span id="btn_branco" class="cor-btn" style="background:white; border:1px solid #000;" onclick="trocarCor('branco')"></span>
   </div>
-
-  <hr>
-
-  Escala:
-  <button onclick="changeScale(-0.1)">−</button>
-  <span id="scaleVal">1.0</span>
-  <button onclick="changeScale(0.1)">+</button>
-
-  <br>X:
-  <button onclick="changePos('x', -0.1)">−</button>
-  <span id="posXVal">0</span>
-  <button onclick="changePos('x', 0.1)">+</button>
-
-  <br>Y:
-  <button onclick="changePos('y', -0.1)">−</button>
-  <span id="posYVal">0</span>
-  <button onclick="changePos('y', 0.1)">+</button>
-
-  <br>Z:
-  <button onclick="changePos('z', -0.1)">−</button>
-  <span id="posZVal">0</span>
-  <button onclick="changePos('z', 0.1)">+</button>
-
-  <br>Rot X:
-  <button onclick="changeRot('x', -15)">−</button>
-  <span id="rotXVal">-90</span>
-  <button onclick="changeRot('x', 15)">+</button>
-
-  <br>Rot Y:
-  <button onclick="changeRot('y', -15)">−</button>
-  <span id="rotYVal">0</span>
-  <button onclick="changeRot('y', 15)">+</button>
-
-  <br>Rot Z:
-  <button onclick="changeRot('z', -15)">−</button>
-  <span id="rotZVal">0</span>
-  <button onclick="changeRot('z', 15)">+</button>
-
 </div>
-
-
 
 <script>
 
@@ -173,10 +101,10 @@ const controls = document.getElementById('controls');
 const activeMarkerLabel = document.getElementById('active-marker-label');
 
 const markerConfig = [
-  { name:'BMW Série 3', el:document.querySelector('[url="./pattern-letterA.patt"]'), model:document.getElementById('model1'), base:'bmw3', cores:['preto','prata','vermelho'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} },
-  { name:'BMW X5', el:document.querySelector('[url="./pattern-letterB.patt"]'), model:document.getElementById('model2'), base:'x5', cores:['preto','prata','branco'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} },
-  { name:'Fiat Palio', el:document.querySelector('[url="./pattern-letterC.patt"]'), model:document.getElementById('model3'), base:'palio', cores:['preto','prata','vermelho'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} },
-  { name:'Fiat Uno', el:document.querySelector('[url="./pattern-letterD.patt"]'), model:document.getElementById('model4'), base:'uno', cores:['preto','prata','branco'], state:{scale:1,pos:{x:0,y:0,z:0},rot:{x:-90,y:0,z:0}} }
+  { name:'BMW Série 3', el:document.querySelector('[url="./pattern-letterA.patt"]'), model:document.getElementById('model1'), base:'bmw3', cores:['preto','prata','vermelho'] },
+  { name:'BMW X5', el:document.querySelector('[url="./pattern-letterB.patt"]'), model:document.getElementById('model2'), base:'x5', cores:['preto','prata','branco'] },
+  { name:'Fiat Palio', el:document.querySelector('[url="./pattern-letterC.patt"]'), model:document.getElementById('model3'), base:'palio', cores:['preto','prata','vermelho'] },
+  { name:'Fiat Uno', el:document.querySelector('[url="./pattern-letterD.patt"]'), model:document.getElementById('model4'), base:'uno', cores:['preto','prata','branco'] }
 ];
 
 let activeMarker = null;
@@ -186,8 +114,9 @@ markerConfig.forEach(m=>{
     activeMarker=m;
     activeMarkerLabel.textContent=`Carro ativo: ${m.name}`;
     controls.classList.add('visible');
-    atualizarBotoesCores(); // 👈 AQUI
+    atualizarBotoesCores();
   });
+
   m.el.addEventListener('markerLost',()=>{
     if(activeMarker===m){
       activeMarker=null;
@@ -201,39 +130,16 @@ function trocarCor(cor){
   if(!activeMarker.cores.includes(cor)) return;
 
   const modelo = `#${activeMarker.base}_${cor}`;
-
   activeMarker.model.setAttribute('gltf-model', modelo);
 }
-  function atualizarBotoesCores() {
-  const todas = ['preto','prata','vermelho','branco'];
 
-  todas.forEach(cor => {
-    const btn = document.getElementById(`btn_${cor}`);
-    btn.style.display = activeMarker.cores.includes(cor) ? 'inline-block' : 'none';
+function atualizarBotoesCores(){
+  const todas=['preto','prata','vermelho','branco'];
+
+  todas.forEach(c=>{
+    const btn=document.getElementById(`btn_${c}`);
+    btn.style.display = activeMarker.cores.includes(c) ? 'inline-block' : 'none';
   });
-}
-function changeScale(d){
-  if(!activeMarker)return;
-  const s=activeMarker.state;
-  s.scale=Math.max(0.1,s.scale+d);
-  activeMarker.model.setAttribute('scale',`${s.scale} ${s.scale} ${s.scale}`);
-  document.getElementById('scaleVal').textContent=s.scale.toFixed(1);
-}
-
-function changePos(a,d){
-  if(!activeMarker)return;
-  const p=activeMarker.state.pos;
-  p[a]+=d;
-  activeMarker.model.setAttribute('position',`${p.x} ${p.y} ${p.z}`);
-  document.getElementById(`pos${a.toUpperCase()}Val`).textContent=p[a].toFixed(1);
-}
-
-function changeRot(a,d){
-  if(!activeMarker)return;
-  const r=activeMarker.state.rot;
-  r[a]+=d;
-  activeMarker.model.setAttribute('rotation',`${r.x} ${r.y} ${r.z}`);
-  document.getElementById(`rot${a.toUpperCase()}Val`).textContent=r[a];
 }
 
 </script>
