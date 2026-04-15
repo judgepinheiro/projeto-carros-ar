@@ -1,166 +1,283 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>Document</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <title>AR Carros</title>
+
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <!-- include ar.js for A-Frame -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
+
   <style>
-    #controls { display: none; position: fixed; z-index: 999; bottom: 20px; left: 0; }
+    body { margin:0; overflow:hidden; }
+
+    #controls {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      bottom: 20px;
+      left: 10px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      font-family: Arial;
+    }
+
     #controls.visible { display: block; }
+
+    button { margin: 2px; }
+
+    /* 🎨 Bolinhas */
+    .cor-btn {
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      margin: 5px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: 0.2s;
+    }
+
+    .cor-btn:hover {
+      transform: scale(1.2);
+    }
   </style>
 </head>
-<body style='margin: 0px; overflow: hidden;'>
-  <a-scene embedded arjs>
 
-    <a-assets>
-      <!-- https://sketchfab.com/3d-models/2025-mg-cyberster-glbmgmotorcommx-194c998698594d7e825c9f5dedcdbef3 -->
-      <a-asset-item id="carro1" src="./carro.glb"></a-asset-item>
-      <!-- https://sketchfab.com/3d-models/peugeot-206-glb-1d278036c89d489bb47ccd33b0effa21 -->
-      <a-asset-item id="carro2" src="./carro2.glb"></a-asset-item>
-    </a-assets>
+<body>
 
-    <a-marker type="pattern" url="./pattern-letterB.patt">
-      <a-entity id="model1" gltf-model="#carro1" rotation="-90 0 0" scale="1 1 1"></a-entity>
-    </a-marker>
+<a-scene embedded arjs>
 
-    <a-marker type="pattern" url="./pattern-letterA.patt">
-      <a-entity id="model2" gltf-model="#carro2" rotation="-90 0 0" scale="1 1 1"></a-entity>
-    </a-marker>
+  <!-- 🔥 MODELOS -->
+  <a-assets>
+    <!-- BMW Série 3 -->
+    <a-asset-item id="bmw3_preto" src="./bmw3_preto.glb"></a-asset-item>
+    <a-asset-item id="bmw3_prata" src="./bmw3_prata.glb"></a-asset-item>
+    <a-asset-item id="bmw3_vermelho" src="./bmw3_vermelho.glb"></a-asset-item>
 
-    <a-entity camera></a-entity>
+    <!-- BMW X5 -->
+    <a-asset-item id="x5_preto" src="./x5_preto.glb"></a-asset-item>
+    <a-asset-item id="x5_prata" src="./x5_prata.glb"></a-asset-item>
+    <a-asset-item id="x5_branco" src="./x5_branco.glb"></a-asset-item>
 
-  </a-scene>
+    <!-- Palio -->
+    <a-asset-item id="palio_preto" src="./palio_preto.glb"></a-asset-item>
+    <a-asset-item id="palio_prata" src="./palio_prata.glb"></a-asset-item>
+    <a-asset-item id="palio_vermelho" src="./palio_vermelho.glb"></a-asset-item>
 
-  <div id="controls">
-    <div id="active-marker-label">—</div>
-    <!-- Escala -->
-    <div>
-      <span>Escala</span>
-      <button onclick="changeScale(-0.1)">−</button>
-      <span id="scaleVal">1.0</span>
-      <button onclick="changeScale(0.1)">+</button>
-    </div>
-    <!-- Position X -->
-    <div>
-      <span>Pos X</span>
-      <button onclick="changePos('x', -0.1)">−</button>
-      <span id="posXVal">0.0</span>
-      <button onclick="changePos('x', 0.1)">+</button>
-    </div>
-    <!-- Position Y -->
-    <div>
-      <span>Pos Y</span>
-      <button onclick="changePos('y', -0.1)">−</button>
-      <span id="posYVal">0.0</span>
-      <button onclick="changePos('y', 0.1)">+</button>
-    </div>
-    <!-- Position Z -->
-    <div>
-      <span>Pos Z</span>
-      <button onclick="changePos('z', -0.1)">−</button>
-      <span id="posZVal">0.0</span>
-      <button onclick="changePos('z', 0.1)">+</button>
-    </div>
-    <!-- Rotation X -->
-    <div>
-      <span>Rot X</span>
-      <button onclick="changeRot('x', -15)">−</button>
-      <span id="rotXVal">-90</span>
-      <button onclick="changeRot('x', 15)">+</button>
-    </div>
-    <!-- Rotation Y -->
-    <div>
-      <span>Rot Y</span>
-      <button onclick="changeRot('y', -15)">−</button>
-      <span id="rotYVal">0</span>
-      <button onclick="changeRot('y', 15)">+</button>
-    </div>
-    <!-- Rotation Z -->
-    <div>
-      <span>Rot Z</span>
-      <button onclick="changeRot('z', -15)">−</button>
-      <span id="rotZVal">0</span>
-      <button onclick="changeRot('z', 15)">+</button>
-    </div>
+    <!-- Uno -->
+    <a-asset-item id="uno_preto" src="./uno_preto.glb"></a-asset-item>
+    <a-asset-item id="uno_prata" src="./uno_prata.glb"></a-asset-item>
+    <a-asset-item id="uno_branco" src="./uno_branco.glb"></a-asset-item>
+  </a-assets>
+
+  <!-- 🅰 -->
+  <a-marker type="pattern" url="./pattern-letterA.patt">
+    <a-entity id="model1" gltf-model="#bmw3_preto" rotation="-90 0 0"></a-entity>
+  </a-marker>
+
+  <!-- 🅱 -->
+  <a-marker type="pattern" url="./pattern-letterB.patt">
+    <a-entity id="model2" gltf-model="#x5_preto" rotation="-90 0 0"></a-entity>
+  </a-marker>
+
+  <!-- 🅲 -->
+  <a-marker type="pattern" url="./pattern-letterC.patt">
+    <a-entity id="model3" gltf-model="#palio_preto" rotation="-90 0 0"></a-entity>
+  </a-marker>
+
+  <!-- 🅳 -->
+  <a-marker type="pattern" url="./pattern-letterD.patt">
+    <a-entity id="model4" gltf-model="#uno_preto" rotation="-90 0 0"></a-entity>
+  </a-marker>
+
+  <a-entity camera></a-entity>
+
+</a-scene>
+
+<!-- 🎮 CONTROLES -->
+<div id="controls">
+
+  <div id="active-marker-label">—</div>
+
+  <!-- 🎨 CORES -->
+  <div>
+    <strong>Cores:</strong><br>
+
+    <span id="btn_preto" class="cor-btn" style="background:black;" onclick="trocarCor('preto')"></span>
+    <span id="btn_prata" class="cor-btn" style="background:silver;" onclick="trocarCor('prata')"></span>
+    <span id="btn_vermelho" class="cor-btn" style="background:red;" onclick="trocarCor('vermelho')"></span>
+    <span id="btn_branco" class="cor-btn" style="background:white; border:1px solid #000;" onclick="trocarCor('branco')"></span>
   </div>
 
-  <script>
-    const controls = document.getElementById('controls');
-    const activeMarkerLabel = document.getElementById('active-marker-label');
+  <hr>
 
-    // Cada marcador tem seu próprio modelo e estado independente
-    const markerConfig = [
-      {
-        name: 'Letter B (carro.glb)',
-        el: document.querySelector('[url="./pattern-letterB.patt"]'),
-        model: document.getElementById('model1'),
-        state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
-      },
-      {
-        name: 'Letter A (carro2.glb)',
-        el: document.querySelector('[url="./pattern-letterA.patt"]'),
-        model: document.getElementById('model2'),
-        state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
-      }
-    ];
+  <!-- ESCALA -->
+  <div>
+    Escala:
+    <button onclick="changeScale(-0.1)">−</button>
+    <span id="scaleVal">1.0</span>
+    <button onclick="changeScale(0.1)">+</button>
+  </div>
 
-    let activeMarker = null;
+  <!-- POS -->
+  <div>
+    X:
+    <button onclick="changePos('x', -0.1)">−</button>
+    <span id="posXVal">0</span>
+    <button onclick="changePos('x', 0.1)">+</button>
+  </div>
 
-    markerConfig.forEach(m => {
-      m.el.addEventListener('markerFound', () => {
-        activeMarker = m;
-        console.log(`[AR] markerFound: ${m.name}`);
-        activeMarkerLabel.textContent = `Marcador ativo: ${m.name}`;
-        syncDisplays(m.state);
-        controls.classList.add('visible');
-      });
+  <div>
+    Y:
+    <button onclick="changePos('y', -0.1)">−</button>
+    <span id="posYVal">0</span>
+    <button onclick="changePos('y', 0.1)">+</button>
+  </div>
 
-      m.el.addEventListener('markerLost', () => {
-        console.log(`[AR] markerLost: ${m.name}`);
-        if (activeMarker === m) {
-          activeMarker = null;
-          controls.classList.remove('visible');
-        }
-      });
-    });
+  <div>
+    Z:
+    <button onclick="changePos('z', -0.1)">−</button>
+    <span id="posZVal">0</span>
+    <button onclick="changePos('z', 0.1)">+</button>
+  </div>
 
-    // Atualiza todos os displays com o estado do marcador ativo
-    function syncDisplays(state) {
-      document.getElementById('scaleVal').textContent = state.scale.toFixed(1);
-      document.getElementById('posXVal').textContent  = state.pos.x.toFixed(1);
-      document.getElementById('posYVal').textContent  = state.pos.y.toFixed(1);
-      document.getElementById('posZVal').textContent  = state.pos.z.toFixed(1);
-      document.getElementById('rotXVal').textContent  = state.rot.x;
-      document.getElementById('rotYVal').textContent  = state.rot.y;
-      document.getElementById('rotZVal').textContent  = state.rot.z;
+  <!-- ROT -->
+  <div>
+    Rot X:
+    <button onclick="changeRot('x', -15)">−</button>
+    <span id="rotXVal">-90</span>
+    <button onclick="changeRot('x', 15)">+</button>
+  </div>
+
+  <div>
+    Rot Y:
+    <button onclick="changeRot('y', -15)">−</button>
+    <span id="rotYVal">0</span>
+    <button onclick="changeRot('y', 15)">+</button>
+  </div>
+
+  <div>
+    Rot Z:
+    <button onclick="changeRot('z', -15)">−</button>
+    <span id="rotZVal">0</span>
+    <button onclick="changeRot('z', 15)">+</button>
+  </div>
+
+</div>
+
+<script>
+
+const controls = document.getElementById('controls');
+const activeMarkerLabel = document.getElementById('active-marker-label');
+
+const markerConfig = [
+  {
+    name: 'BMW Série 3',
+    el: document.querySelector('[url="./pattern-letterA.patt"]'),
+    model: document.getElementById('model1'),
+    base: 'bmw3',
+    cores: ['preto', 'prata', 'vermelho'],
+    state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
+  },
+  {
+    name: 'BMW X5',
+    el: document.querySelector('[url="./pattern-letterB.patt"]'),
+    model: document.getElementById('model2'),
+    base: 'x5',
+    cores: ['preto', 'prata', 'branco'],
+    state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
+  },
+  {
+    name: 'Fiat Palio',
+    el: document.querySelector('[url="./pattern-letterC.patt"]'),
+    model: document.getElementById('model3'),
+    base: 'palio',
+    cores: ['preto', 'prata', 'vermelho'],
+    state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
+  },
+  {
+    name: 'Fiat Uno',
+    el: document.querySelector('[url="./pattern-letterD.patt"]'),
+    model: document.getElementById('model4'),
+    base: 'uno',
+    cores: ['preto', 'prata', 'branco'],
+    state: { scale: 1.0, pos: { x: 0, y: 0, z: 0 }, rot: { x: -90, y: 0, z: 0 } }
+  }
+];
+
+let activeMarker = null;
+
+markerConfig.forEach(m => {
+  m.el.addEventListener('markerFound', () => {
+    activeMarker = m;
+    activeMarkerLabel.textContent = `Carro ativo: ${m.name}`;
+    controls.classList.add('visible');
+    atualizarBotoesCores();
+  });
+
+  m.el.addEventListener('markerLost', () => {
+    if (activeMarker === m) {
+      activeMarker = null;
+      controls.classList.remove('visible');
     }
+  });
+});
 
-    function changeScale(delta) {
-      if (!activeMarker) return;
-      const s = activeMarker.state;
-      s.scale = Math.max(0.1, parseFloat((s.scale + delta).toFixed(1)));
-      activeMarker.model.setAttribute('scale', `${s.scale} ${s.scale} ${s.scale}`);
-      document.getElementById('scaleVal').textContent = s.scale.toFixed(1);
-    }
+function atualizarBotoesCores() {
+  const todas = ['preto','prata','vermelho','branco'];
 
-    function changePos(axis, delta) {
-      if (!activeMarker) return;
-      const p = activeMarker.state.pos;
-      p[axis] = parseFloat((p[axis] + delta).toFixed(1));
-      activeMarker.model.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
-      document.getElementById(`pos${axis.toUpperCase()}Val`).textContent = p[axis].toFixed(1);
-    }
+  todas.forEach(cor => {
+    const btn = document.getElementById(`btn_${cor}`);
+    btn.style.display = activeMarker.cores.includes(cor) ? 'inline-block' : 'none';
+  });
+}
 
-    function changeRot(axis, delta) {
-      if (!activeMarker) return;
-      const r = activeMarker.state.rot;
-      r[axis] = (r[axis] + delta) % 360;
-      activeMarker.model.setAttribute('rotation', `${r.x} ${r.y} ${r.z}`);
-      document.getElementById(`rot${axis.toUpperCase()}Val`).textContent = r[axis];
-    }
-  </script>
+function destacarCor(cor) {
+  const todas = ['preto','prata','vermelho','branco'];
+
+  todas.forEach(c => {
+    document.getElementById(`btn_${c}`).style.border = '2px solid transparent';
+  });
+
+  const ativo = document.getElementById(`btn_${cor}`);
+  if (ativo) ativo.style.border = '2px solid yellow';
+}
+
+function trocarCor(cor) {
+  if (!activeMarker) return;
+
+  const modelo = `#${activeMarker.base}_${cor}`;
+  activeMarker.model.setAttribute('gltf-model', modelo);
+
+  destacarCor(cor);
+}
+
+function changeScale(delta) {
+  if (!activeMarker) return;
+  const s = activeMarker.state;
+  s.scale = Math.max(0.1, (s.scale + delta));
+  activeMarker.model.setAttribute('scale', `${s.scale} ${s.scale} ${s.scale}`);
+  document.getElementById('scaleVal').textContent = s.scale.toFixed(1);
+}
+
+function changePos(axis, delta) {
+  if (!activeMarker) return;
+  const p = activeMarker.state.pos;
+  p[axis] += delta;
+  activeMarker.model.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
+}
+
+function changeRot(axis, delta) {
+  if (!activeMarker) return;
+  const r = activeMarker.state.rot;
+  r[axis] += delta;
+  activeMarker.model.setAttribute('rotation', `${r.x} ${r.y} ${r.z}`);
+}
+
+</script>
+
 </body>
 </html>
