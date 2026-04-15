@@ -34,7 +34,6 @@
       margin: 5px;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: 0.2s;
     }
 
     .cor-btn:hover {
@@ -70,7 +69,6 @@
       width:0%;
       height:100%;
       background:lime;
-      transition:width 0.3s;
     }
   </style>
 </head>
@@ -127,6 +125,50 @@
     <span id="btn_vermelho" class="cor-btn" style="background:red;" onclick="trocarCor('vermelho')"></span>
     <span id="btn_branco" class="cor-btn" style="background:white; border:1px solid #000;" onclick="trocarCor('branco')"></span>
   </div>
+
+  <hr>
+
+  <div>
+    Escala:
+    <button onclick="changeScale(-0.1)">−</button>
+    <button onclick="changeScale(0.1)">+</button>
+  </div>
+
+  <div>
+    X:
+    <button onclick="changePos('x', -0.1)">−</button>
+    <button onclick="changePos('x', 0.1)">+</button>
+  </div>
+
+  <div>
+    Y:
+    <button onclick="changePos('y', -0.1)">−</button>
+    <button onclick="changePos('y', 0.1)">+</button>
+  </div>
+
+  <div>
+    Z:
+    <button onclick="changePos('z', -0.1)">−</button>
+    <button onclick="changePos('z', 0.1)">+</button>
+  </div>
+
+  <div>
+    Rot X:
+    <button onclick="changeRot('x', -15)">−</button>
+    <button onclick="changeRot('x', 15)">+</button>
+  </div>
+
+  <div>
+    Rot Y:
+    <button onclick="changeRot('y', -15)">−</button>
+    <button onclick="changeRot('y', 15)">+</button>
+  </div>
+
+  <div>
+    Rot Z:
+    <button onclick="changeRot('z', -15)">−</button>
+    <button onclick="changeRot('z', 15)">+</button>
+  </div>
 </div>
 
 <div id="loading">
@@ -147,28 +189,32 @@ const markerConfig = [
     el: document.querySelector('[url="./pattern-letterA.patt"]'),
     model: document.getElementById('model1'),
     base: 'bmw3',
-    cores: ['preto', 'prata', 'vermelho']
+    cores: ['preto', 'prata', 'vermelho'],
+    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
   },
   {
     name: 'BMW X5',
     el: document.querySelector('[url="./pattern-letterB.patt"]'),
     model: document.getElementById('model2'),
     base: 'x5',
-    cores: ['preto', 'prata', 'branco']
+    cores: ['preto', 'prata', 'branco'],
+    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
   },
   {
     name: 'Fiat Palio',
     el: document.querySelector('[url="./pattern-letterC.patt"]'),
     model: document.getElementById('model3'),
     base: 'palio',
-    cores: ['preto', 'prata', 'vermelho']
+    cores: ['preto', 'prata', 'vermelho'],
+    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
   },
   {
     name: 'Fiat Uno',
     el: document.querySelector('[url="./pattern-letterD.patt"]'),
     model: document.getElementById('model4'),
     base: 'uno',
-    cores: ['preto', 'prata', 'branco']
+    cores: ['preto', 'prata', 'branco'],
+    state: { scale: 1, pos: {x:0,y:0,z:0}, rot: {x:-90,y:0,z:0} }
   }
 ];
 
@@ -179,7 +225,6 @@ markerConfig.forEach(m => {
     activeMarker = m;
     activeMarkerLabel.textContent = `Carro ativo: ${m.name}`;
     controls.classList.add('visible');
-    atualizarBotoesCores();
   });
 
   m.el.addEventListener('markerLost', () => {
@@ -190,23 +235,6 @@ markerConfig.forEach(m => {
   });
 });
 
-function atualizarBotoesCores() {
-  const todas = ['preto','prata','vermelho','branco'];
-  todas.forEach(cor => {
-    const btn = document.getElementById(`btn_${cor}`);
-    btn.style.display = activeMarker.cores.includes(cor) ? 'inline-block' : 'none';
-  });
-}
-
-function destacarCor(cor) {
-  const todas = ['preto','prata','vermelho','branco'];
-  todas.forEach(c => {
-    document.getElementById(`btn_${c}`).style.border = '2px solid transparent';
-  });
-  const ativo = document.getElementById(`btn_${cor}`);
-  if (ativo) ativo.style.border = '2px solid yellow';
-}
-
 function trocarCor(cor) {
   if (!activeMarker) return;
   if (!activeMarker.cores.includes(cor)) return;
@@ -216,28 +244,38 @@ function trocarCor(cor) {
   const bar = document.getElementById("loading-bar");
 
   loading.style.display = "flex";
-  bar.style.width = "0%";
+  bar.style.width = "10%";
 
-  let progresso = 0;
-  const intervalo = setInterval(() => {
-    progresso += 10;
-    bar.style.width = progresso + "%";
-    if (progresso >= 90) clearInterval(intervalo);
-  }, 100);
+  const entity = activeMarker.model;
 
-  activeMarker.model.removeAttribute('gltf-model');
-
-  setTimeout(() => {
-    activeMarker.model.setAttribute('gltf-model', modelo);
+  entity.addEventListener('model-loaded', function handler() {
     bar.style.width = "100%";
+    setTimeout(() => loading.style.display = "none", 300);
+    entity.removeEventListener('model-loaded', handler);
+  });
 
-    setTimeout(() => {
-      loading.style.display = "none";
-    }, 300);
+  entity.setAttribute('gltf-model', modelo);
+}
 
-  }, 200);
+function changeScale(delta) {
+  if (!activeMarker) return;
+  const s = activeMarker.state;
+  s.scale = Math.max(0.1, s.scale + delta);
+  activeMarker.model.setAttribute('scale', `${s.scale} ${s.scale} ${s.scale}`);
+}
 
-  destacarCor(cor);
+function changePos(axis, delta) {
+  if (!activeMarker) return;
+  const p = activeMarker.state.pos;
+  p[axis] += delta;
+  activeMarker.model.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
+}
+
+function changeRot(axis, delta) {
+  if (!activeMarker) return;
+  const r = activeMarker.state.rot;
+  r[axis] += delta;
+  activeMarker.model.setAttribute('rotation', `${r.x} ${r.y} ${r.z}`);
 }
 
 </script>
